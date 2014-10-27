@@ -5,6 +5,7 @@
 #include "xtion-endpoint.h"
 
 #include <linux/time.h>
+#include <linux/module.h>
 #include <media/videobuf2-core.h>
 #include <media/videobuf2-vmalloc.h>
 #include <media/v4l2-ioctl.h>
