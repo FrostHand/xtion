@@ -15,11 +15,21 @@ else
 
 KDIR ?= /lib/modules/`uname -r`/build
 
-all:
-	$(MAKE) -C $(KDIR) M=$$PWD
+default: modules
 
-default:
+modules: 
 	$(MAKE) -C $(KDIR) M=$$PWD
+install: modules_install
+
+modules_install:
+	make -C $(KDIR) M=$$PWD modules_install
+
+clean:
+	make -C $(KDIR) M=$$PWD clean
+
+test:
+	gcc $(CFLAGS) xtion-math-emu-tests.c -o xtion-math-emu-tests
+	@./xtion-math-emu-tests
 
 endif
 
