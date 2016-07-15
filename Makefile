@@ -13,7 +13,7 @@ endif
 
 else
 
-KDIR ?= /lib/modules/`uname -r`/build
+#KDIR ?= /lib/modules/`uname -r`/build
 
 default: modules
 
