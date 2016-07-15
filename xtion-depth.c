@@ -271,9 +271,13 @@ void xtion_generate_lut(struct xtion *xtion, u16* plut[])
 
 	*plut = (u16*)kzalloc((MAX_SHIFT_VALUE + 10) * sizeof(u16), GFP_KERNEL);
 
-	dcmos_emitter_distance_f32.float_ = xtion->fixed.dcmos_emitter_distance;
-	zero_plane_pixel_size_f32.float_ = xtion->fixed.reference_pixel_size;
-	reference_distance_f32.float_ = xtion->fixed.reference_distance;
+	//dcmos_emitter_distance_f32.float_ = xtion->fixed.dcmos_emitter_distance;
+	//zero_plane_pixel_size_f32.float_ = xtion->fixed.reference_pixel_size;
+	//reference_distance_f32.float_ = xtion->fixed.reference_distance;
+
+	mov_f32(&xtion->fixed.dcmos_emitter_distance, &dcmos_emitter_distance_f32.float_);
+	mov_f32(&xtion->fixed.reference_pixel_size, &zero_plane_pixel_size_f32.float_);
+	mov_f32(&xtion->fixed.reference_distance, &reference_distance_f32.float_);
 
 	aa.uint32_ = u2f(8 * PARAM_COEFF * SHIFT_SCALE);
 	mul_f32(&reference_distance_f32, &aa, &aa);

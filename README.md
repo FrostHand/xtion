@@ -42,3 +42,8 @@ Known Issues
 
 [guvcview]: http://sourceforge.net/projects/guvcview/
 [xtion_grabber]: https://github.com/xqms/xtion_grabber/
+
+
+Building
+----------
+KERNEL_SRC=/usr/src/linux-headers-`uname -r` make

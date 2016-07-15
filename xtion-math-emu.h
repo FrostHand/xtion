@@ -95,6 +95,12 @@ int div_f32(float32* a, float32* b)
 	return mantisa;
 }
 
+/// Moves f32 value
+void mov_f32(const float32* from, float32* to)
+{
+	memcpy(from, to, sizeof(float32));
+}
+
 void mul_f32(float32* a, float32* b, float32* c)
 {
 	static const u64 mask = 0x7FFFFF;
