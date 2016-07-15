@@ -1,4 +1,4 @@
-ifneq ($(KERNELRELEASE),)
+#ifneq ($(KERNELRELEASE),)
 
 obj-m := xtion.o
 xtion-y := xtion-core.o xtion-control.o xtion-endpoint.o xtion-color.o xtion-depth.o
@@ -10,17 +10,18 @@ ifeq ($(avx2_supported),yes)
 xtion-y += xtion-depth-accel.o
 endif
 
-else
-
+#else
 #KDIR ?= /lib/modules/`uname -r`/build
 KDIR ?= $(KERNEL_SRC)
+SRC := $(shell pwd)
 
-default: modules
+#default: modules
+#modules:
+#	$(MAKE) -C $(KDIR) M=$(SRC)
 
-modules:
-	$(MAKE) -C $(KDIR) M=$(SRC)
-
-install: modules_install
+all: 
+	$(MAKE) -C $(KERNEL_SRC) M=$(SRC) modules
+#install: modules_install
 
 modules_install:
 	make -C $(KDIR) M=$(SRC) modules_install
@@ -32,5 +33,5 @@ test:
 	gcc $(CFLAGS) xtion-math-emu-tests.c -o xtion-math-emu-tests
 	@./xtion-math-emu-tests
 
-endif
+#endif
 
