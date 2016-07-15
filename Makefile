@@ -1,4 +1,3 @@
-
 ifneq ($(KERNELRELEASE),)
 
 obj-m := xtion.o
@@ -14,19 +13,20 @@ endif
 else
 
 #KDIR ?= /lib/modules/`uname -r`/build
+KDIR ?= $(KERNEL_SRC)
 
 default: modules
 
-modules: 
-	$(MAKE) -C $(KDIR) M=$$PWD
+modules:
+	$(MAKE) -C $(KDIR) M=$(SRC)
 
 install: modules_install
 
 modules_install:
-	make -C $(KDIR) M=$$PWD modules_install
+	make -C $(KDIR) M=$(SRC) modules_install
 
 clean:
-	make -C $(KDIR) M=$$PWD clean
+	make -C $(KDIR) M=$(SRC) clean
 
 test:
 	gcc $(CFLAGS) xtion-math-emu-tests.c -o xtion-math-emu-tests
