@@ -940,7 +940,10 @@ int xtion_endpoint_init(struct xtion_endpoint* endp, struct xtion* xtion, const 
 	endp->vb2.buf_struct_size = config->buffer_size;
 	endp->vb2.ops = &xtion_vb2_ops;
 	endp->vb2.mem_ops = &vb2_vmalloc_memops;
-#if LINUX_VERSION_CODE <= KERNEL_VERSION(3, 14, 4)
+	/// It seems LINUX_VERSION_CODE <= KERNEL_VERSION(3, 14, 4) 
+	/// to be not best way to check compatibility
+	/// Kernel 3.14.29 still do not have this field
+#if LINUX_VERSION_CODE <= KERNEL_VERSION(3, 14, 29)
 	endp->vb2.timestamp_type = V4L2_BUF_FLAG_TIMESTAMP_MONOTONIC;
 #else
 	endp->vb2.timestamp_flags = V4L2_BUF_FLAG_TIMESTAMP_MONOTONIC;
