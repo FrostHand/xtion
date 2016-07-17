@@ -47,3 +47,11 @@ Known Issues
 Building
 ----------
 KERNEL_SRC=/usr/src/linux-headers-`uname -r` make
+
+export ROS_ROOT=/opt/ros/indigo
+export PATH=$PATH:$ROS_ROOT/bin
+export LD_LIBRARY_PATH=$ROS_ROOT/lib
+export PYTHONPATH=$ROS_ROOT/lib/python2.7/site-packages
+export ROS_MASTER_URI=http://localhost:11311
+export CMAKE_PREFIX_PATH=$ROS_ROOT
+touch $ROS_ROOT/.catkin
