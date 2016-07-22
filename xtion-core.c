@@ -64,6 +64,7 @@ static int xtion_setup(void *_xtion)
 	struct xtion *xtion = _xtion;
 	struct usb_device *udev = xtion->dev;
 	int ret, tries = 0;
+	int use_iso = 0;
 
 	msleep(3000);
 
@@ -90,12 +91,16 @@ static int xtion_setup(void *_xtion)
 			dev_err(&xtion->interface->dev, "Could not switch to isochronous alternate setting: %d\n", ret);
 			goto error_release;
 		}
+		else
+		{
+			use_iso = 1;
+		}
 	}
 
-	dev_info(&xtion->dev->dev, "Found ASUS Xtion with firmware version %d.%d.%d, chip: 0x%X, fpga: %d\n",
+	dev_info(&xtion->dev->dev, "Found ASUS Xtion with firmware version %d.%d.%d, chip: 0x%X, fpga: %d, iso: %s\n",
 		xtion->version.major, xtion->version.minor, xtion->version.build,
 		xtion->version.chip,
-		xtion->version.fpga
+		xtion->version.fpga, use_iso?"true":"false"
 	);
 
 	if(xtion->version.major * 256 + xtion->version.minor < 5 * 256 + 7) {

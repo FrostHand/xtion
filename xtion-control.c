@@ -94,7 +94,7 @@ int xtion_read_version(struct xtion* xtion)
 	}
 
 	if(response_size != sizeof(struct XtionReplyHeader) + sizeof(struct XtionVersion) || reply->header.magic != XTION_MAGIC_DEV) {
-		dev_err(&xtion->dev->dev, "Invalid response\n");
+		dev_err(&xtion->dev->dev, "read_version: Invalid response\n");
 		return -EIO;
 	}
 
@@ -141,7 +141,7 @@ int xtion_read_algorithm_params(struct xtion* xtion)
 		ret = xtion_control(xtion, (u8*)&request, sizeof(request), response_buffer, &response_size);
 
 		if(ret != 0) {
-			dev_err(&xtion->dev->dev, "Could not read algorithm params at addr %d: %d", data_read/4, ret);
+			dev_err(&xtion->dev->dev, "read_algorithm_params: Could not read algorithm params at addr %d: %d", data_read/4, ret);
 			return ret;
 		}
 
@@ -184,7 +184,7 @@ int xtion_read_fixed_params(struct xtion* xtion)
 		ret = xtion_control(xtion, (u8*)&request, sizeof(request), response_buffer, &response_size);
 
 		if(ret != 0) {
-			dev_err(&xtion->dev->dev, "Could not read fixed params at addr %d: %d", data_read/4, ret);
+			dev_err(&xtion->dev->dev, "read_fixed_params: Could not read fixed params at addr %d: %d", data_read/4, ret);
 			return ret;
 		}
 
@@ -227,7 +227,7 @@ int xtion_read_serial_number(struct xtion *xtion)
 	}
 
 	if(response_size < sizeof(struct XtionReplyHeader) || reply->header.magic != XTION_MAGIC_DEV) {
-		dev_err(&xtion->dev->dev, "Invalid response (size %d, magic 0x%X)\n", response_size, reply->header.magic);
+		dev_err(&xtion->dev->dev, "read_serial_number: Invalid response (size %d, magic 0x%X)\n", response_size, reply->header.magic);
 		return -EIO;
 	}
 
@@ -261,7 +261,7 @@ int xtion_get_cmos_presets(struct xtion *xtion, unsigned int cmos, struct XtionC
 	}
 
 	if(response_size < sizeof(struct XtionReplyHeader) || reply->header.magic != XTION_MAGIC_DEV) {
-		dev_err(&xtion->dev->dev, "Invalid response (size %d, magic 0x%X)\n", response_size, reply->header.magic);
+		dev_err(&xtion->dev->dev, "get_cmos_presets: Invalid response (size %d, magic 0x%X)\n", response_size, reply->header.magic);
 		return -EIO;
 	}
 
@@ -330,7 +330,7 @@ int xtion_get_param(struct xtion *xtion, u16 parameter, u16* value)
 	}
 
 	if(response_size < sizeof(struct XtionReplyHeader) || reply->header.magic != XTION_MAGIC_DEV) {
-		dev_err(&xtion->dev->dev, "Invalid response (size %d, magic 0x%X)\n", response_size, reply->header.magic);
+		dev_err(&xtion->dev->dev, "get_param: Invalid response (size %d, magic 0x%X)\n", response_size, reply->header.magic);
 		return -EIO;
 	}
 
