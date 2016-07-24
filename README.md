@@ -47,3 +47,8 @@ Known Issues
 Building
 ----------
 KERNEL_SRC=/usr/src/linux-headers-`uname -r` make
+
+Get device info:
+
+v4l2-ctl -d /dev/xtion_*_color --all
+v4l2-ctl -d /dev/xtion_*_depth --all
