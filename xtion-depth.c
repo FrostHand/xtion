@@ -53,8 +53,9 @@ static void depth_start(struct xtion_endpoint* endp)
 
 	dbuf = depth_buf(endp->active_buffer);
 
-	vaddr = vb2_plane_vaddr(&dbuf->xbuf.vb.vb2_buf, 0);
-	length = vb2_plane_size(&dbuf->xbuf.vb.vb2_buf, 0);
+	vaddr = vb2_plane_vaddr(get_vb2(&dbuf->xbuf), 0);
+	length = vb2_plane_size(get_vb2(&dbuf->xbuf), 0);
+
 	if(!vaddr)
 		return;
 
@@ -95,7 +96,7 @@ static void xtion_depth_unpack_generic(const u8 *input, const u16 *lut, u16 *out
 static inline size_t depth_unpack(struct xtion_depth *depth, struct xtion_buffer *buf, const u8* src, size_t size)
 {
 	size_t num_elements = size / INPUT_ELEMENT_SIZE;
-	u8* vaddr = vb2_plane_vaddr(&buf->vb.vb2_buf, 0);
+	u8* vaddr = vb2_plane_vaddr(get_vb2(buf), 0);
 	u8* wptr = vaddr + buf->pos;
 	size_t num_bytes;
 
@@ -104,7 +105,7 @@ static inline size_t depth_unpack(struct xtion_depth *depth, struct xtion_buffer
 
 	if(num_elements != 0) {
 		num_bytes = num_elements * 8 * sizeof(u16);
-		if(buf->pos + num_bytes > vb2_plane_size(&buf->vb.vb2_buf, 0)) {
+		if(buf->pos + num_bytes > vb2_plane_size(get_vb2(buf), 0)) {
 			dev_err(&depth->endp.xtion->dev->dev, "depth buffer overflow: %lu\n", buf->pos + num_bytes);
 			return num_elements * INPUT_ELEMENT_SIZE;
 		}
@@ -141,6 +142,7 @@ static void depth_end(struct xtion_endpoint *endp)
 	if(!buffer)
 		return;
 
+#ifdef HAS_V4L_VB2_BUF
 	if(vb2_is_streaming(&endp->xtion->color.endp.vb2)) {
 		/* Use timestamp & seq info from color frame */
 		buffer->vb.timestamp = endp->xtion->color.endp.packet_system_timestamp;
@@ -149,8 +151,18 @@ static void depth_end(struct xtion_endpoint *endp)
 		buffer->vb.timestamp = endp->packet_system_timestamp;
 		buffer->vb.sequence = endp->frame_id;
 	}
+#else
+	if(vb2_is_streaming(&endp->xtion->color.endp.vb2)) {
+		/* Use timestamp & seq info from color frame */
+		buffer->vb.v4l2_buf.timestamp = endp->xtion->color.endp.packet_system_timestamp;
+		buffer->vb.v4l2_buf.sequence = endp->xtion->color.endp.frame_id;
+	} else {
+		buffer->vb.v4l2_buf.timestamp = endp->packet_system_timestamp;
+		buffer->vb.v4l2_buf.sequence = endp->frame_id;
+	}
+#endif
 
-	vb2_buffer_done(&buffer->vb.vb2_buf, VB2_BUF_STATE_DONE);
+	vb2_buffer_done(get_vb2(buffer), VB2_BUF_STATE_DONE);
 	endp->active_buffer = 0;
 }
 
@@ -166,10 +178,14 @@ static int depth_uncompress(struct xtion_endpoint *endp, struct xtion_buffer *bu
 		dev_err(&endp->xtion->dev->dev, "depth buffer overflow (padding)\n");
 		return 1;
 	}
-	memset(vb2_plane_vaddr(&buf->vb.vb2_buf, 0), 0, pad);
+	memset(vb2_plane_vaddr(get_vb2(buf), 0), 0, pad);
 	buf->pos += pad;
+#ifdef HAS_V4L_VB2_BUF
 	buf->vb.vb2_buf.planes[0].bytesused = buf->pos;
-	vb2_set_plane_payload(&buf->vb.vb2_buf, 0, buf->pos);
+#else
+	buf->vb.v4l2_planes[0].bytesused = buf->pos;
+#endif
+	vb2_set_plane_payload(get_vb2(buf), 0, buf->pos);
 
 	return 0;
 }
@@ -275,9 +291,9 @@ void xtion_generate_lut(struct xtion *xtion, u16* plut[])
 	//zero_plane_pixel_size_f32.float_ = xtion->fixed.reference_pixel_size;
 	//reference_distance_f32.float_ = xtion->fixed.reference_distance;
 
-	mov_f32(&xtion->fixed.dcmos_emitter_distance, &dcmos_emitter_distance_f32.float_);
-	mov_f32(&xtion->fixed.reference_pixel_size, &zero_plane_pixel_size_f32.float_);
-	mov_f32(&xtion->fixed.reference_distance, &reference_distance_f32.float_);
+	mov_f32(&dcmos_emitter_distance_f32, (float32*)&xtion->fixed.dcmos_emitter_distance);
+	mov_f32(&zero_plane_pixel_size_f32, (float32*)&xtion->fixed.reference_pixel_size);
+	mov_f32(&reference_distance_f32, (float32*)&xtion->fixed.reference_distance);
 
 	aa.uint32_ = u2f(8 * PARAM_COEFF * SHIFT_SCALE);
 	mul_f32(&reference_distance_f32, &aa, &aa);

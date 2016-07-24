@@ -96,9 +96,9 @@ int div_f32(float32* a, float32* b)
 }
 
 /// Moves f32 value
-void mov_f32(const float32* from, float32* to)
+void mov_f32(float32* to, const float32* from)
 {
-	memcpy(from, to, sizeof(float32));
+	memcpy(to, from, sizeof(float32));
 }
 
 void mul_f32(float32* a, float32* b, float32* c)

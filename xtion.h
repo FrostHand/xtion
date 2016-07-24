@@ -12,7 +12,9 @@
 #include <media/v4l2-device.h>
 #include <media/v4l2-ctrls.h>
 #include <media/videobuf2-core.h>
-#include <media/videobuf2-v4l2.h>
+
+// This header exists from Linux-4.4.y
+//#include <media/videobuf2-v4l2.h>
 
 #include "protocol.h"
 
@@ -173,12 +175,34 @@ struct xtion
 	struct mutex control_mutex;
 };
 
+/// TODO: wrap it by ifdef
+//typedef vb2_buffer _vb2_buffer;
+
+
+
 struct xtion_buffer
 {
-	struct vb2_v4l2_buffer vb;
+	//struct vb2_v4l2_buffer vb;
+	struct vb2_buffer vb;
 	unsigned long pos;
 	struct list_head list;
 };
+
+#ifdef HAS_V4L_VB2_BUF
+#define get_vb2(x_buf) (&((x_buf)->vb.vb2_buf))
+/*
+struct vb2_v4l2_buffer * get_vb2(struct xtion_buffer * x_buf)
+{
+	return &x_buf->vb.vb2_buf;
+}*/
+#else
+#define get_vb2(x_buf) (&((x_buf)->vb))
+/*
+struct vb2_buffer * get_vb2(struct xtion_buffer * x_buf)
+{
+	return &x_buf->vb;
+}*/
+#endif
 
 struct xtion_depth_buffer
 {
