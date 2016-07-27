@@ -27,10 +27,12 @@
 
 #define SERIAL_NUMBER_MAX_LEN 31
 
-#define XTION_NUM_URBS 16
-// #define XTION_URB_SIZE (6 * 20480UL)
+//#define XTION_NUM_URBS 16
+/// Making this values larger
+#define XTION_URB_SIZE (6 * 20480UL)
+#define XTION_NUM_URBS 32
 // #define XTION_URB_SIZE 81920
-#define XTION_URB_SIZE 20480
+//#define XTION_URB_SIZE 20480
 
 #define XTION_FLAG_ISOC (1 << 0)
 
