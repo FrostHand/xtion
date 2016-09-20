@@ -36,6 +36,13 @@
 
 #define XTION_FLAG_ISOC (1 << 0)
 
+#if LINUX_VERSION_CORE <= KERNEL_VERSION(3,13,0)
+/// 
+#else
+#define HAS_V4L_VB2_BUF
+#endif
+
+
 struct xtion;
 struct xtion_endpoint;
 struct xtion_buffer;
